@@ -1,4 +1,4 @@
-<!--
+﻿<!--
 Module doc for WeChat.
 Sections: current status, change log, important files, next steps.
 Dependencies: src/App.tsx, src/store.ts, src/index.css, src/lib/charaParser.ts, src/lib/utils.ts.
@@ -19,14 +19,14 @@ Maintenance note: update this file whenever WeChat UI/state/import behavior chan
 
 ## 本次改动
 
-- 2026-05-08：微信四个底部页签从 `src/App.tsx` 拆到 `src/wechat/`：`chats/WeChatChats.tsx`、`contacts/WeChatContacts.tsx`、`discover/WeChatDiscover.tsx`、`me/WeChatMe.tsx`。`App.tsx` 现在只保留微信外壳 `WeChatApp`、聊天房间 `ChatScreen` 和气泡 `Bubble`。
-- 2026-05-08：新增 `src/wechat/shared/WeChatShared.tsx`，集中微信页签共享的顶栏、头像、群头像、消息预览、聊天预设和预设解析，避免四个页签互相复制。
+- 2026-05-08：微信四个底部页签从 `src/App.tsx` 拆到 `src/apps/wechat/`：`chats/WeChatChats.tsx`、`contacts/WeChatContacts.tsx`、`discover/WeChatDiscover.tsx`、`me/WeChatMe.tsx`。`App.tsx` 现在只保留微信外壳 `WeChatApp`、聊天房间 `ChatScreen` 和气泡 `Bubble`。
+- 2026-05-08：新增 `src/apps/wechat/shared/WeChatShared.tsx`，集中微信页签共享的顶栏、头像、群头像、消息预览、聊天预设和预设解析，避免四个页签互相复制。
 - 2026-05-08：聊天页继续按 `ChatScreen` / `Bubble` 局部修整。AI 接口失败不再写入“接口出错”聊天气泡，改为输入栏上方的重试条；用户连发后增加“输入框留空点发送，对方再回复”的待回复提示。
-- 2026-05-08：新增 `src/wechatChat.ts` 存放微信回复拆泡/清洗逻辑，去掉编号、旁白行和角色名前缀，限制 AI 回复更像短微信气泡；保留原有预设、上下文深度、温度、maxTokens、replyStyle 设置。
+- 2026-05-08：新增 `src/apps/wechat/wechatChat.ts` 存放微信回复拆泡/清洗逻辑，去掉编号、旁白行和角色名前缀，限制 AI 回复更像短微信气泡；保留原有预设、上下文深度、温度、maxTokens、replyStyle 设置。
 - 2026-05-08：微信聊天里的语音/视频通话入口仍只写入 `call-note` 消息，不触碰电话模块；`Bubble` 对 `call-note` 使用居中通话提示，不再像普通文字气泡。
 - 2026-05-08：图片文件名显示做截断，长文本/引用/工具按钮补充换行与溢出保护，加号面板增加高度限制，避免移动端横向滚动或顶出屏幕。
-- 2026-05-08：微信聊天新增生活卡片：转账、红包、购物；角色 AI 也可以低频主动发生活动作或表情包。新增 `src/wechat/ai/` 存放微信 AI 提示词、生活动作解析和新手教程。
-- 2026-05-08：新增 `src/wechat/stickers/` 表情包 starter manifest，只使用 OpenMoji、Noto Emoji、Twemoji 这类 emoji/sticker 风格素材，不引入斗图包。
+- 2026-05-08：微信聊天新增生活卡片：转账、红包、购物；角色 AI 也可以低频主动发生活动作或表情包。新增 `src/apps/wechat/ai/` 存放微信 AI 提示词、生活动作解析和新手教程。
+- 2026-05-08：新增 `src/apps/wechat/stickers/` 表情包 starter manifest，只使用 OpenMoji、Noto Emoji、Twemoji 这类 emoji/sticker 风格素材，不引入斗图包。
 - 2026-05-08：群聊不再显示“群名 正在输入中”；群聊行支持长按或右键修改群名。通讯录和发现页入口色块调整为更协调的低饱和配色。
 - 2026-05-08：Zustand persist 版本升级到 38，`ChatMessage` 增加转账/红包/购物可选字段：`amount`、`note`、`itemName`、`status`。
 - 将兼容 ID 生成集中在 `src/lib/utils.ts`，不再读取 `randomUUID` 字段，避免旧环境导入酒馆卡时报错。
@@ -100,13 +100,13 @@ Maintenance note: update this file whenever WeChat UI/state/import behavior chan
 ## 重要文件
 
 - `src/App.tsx`：微信外壳、聊天主界面、语音条/转写/TTS。
-- `src/wechat/chats/WeChatChats.tsx`：微信聊天列表。
-- `src/wechat/contacts/WeChatContacts.tsx`：微信通讯录、导入角色卡、群聊、标签。
-- `src/wechat/discover/WeChatDiscover.tsx`：发现页、朋友圈、照片墙、表情包。
-- `src/wechat/me/WeChatMe.tsx`：我页、收藏、订单与卡包、微信聊天预设设置。
-- `src/wechat/shared/WeChatShared.tsx`：微信页签共享 UI 和格式化/预设工具。
-- `src/wechat/ai/`：微信 AI 活人感提示词、生活动作解析和新手教程。
-- `src/wechat/stickers/`：emoji/sticker 风格表情包 starter manifest 和素材来源说明。
+- `src/apps/wechat/chats/WeChatChats.tsx`：微信聊天列表。
+- `src/apps/wechat/contacts/WeChatContacts.tsx`：微信通讯录、导入角色卡、群聊、标签。
+- `src/apps/wechat/discover/WeChatDiscover.tsx`：发现页、朋友圈、照片墙、表情包。
+- `src/apps/wechat/me/WeChatMe.tsx`：我页、收藏、订单与卡包、微信聊天预设设置。
+- `src/apps/wechat/shared/WeChatShared.tsx`：微信页签共享 UI 和格式化/预设工具。
+- `src/apps/wechat/ai/`：微信 AI 活人感提示词、生活动作解析和新手教程。
+- `src/apps/wechat/stickers/`：emoji/sticker 风格表情包 starter manifest 和素材来源说明。
 - `src/store.ts`：微信个人资料字段、照片墙、朋友圈、表情包描述、群聊、联系人标签、聊天记录、旧数据迁移。
 - `src/index.css`：微信浅色/暗色主题、聊天气泡、底部页签、滚动条隐藏。
 - `src/lib/charaParser.ts`：酒馆 PNG/JSON 角色卡解析。

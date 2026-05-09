@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Standalone Xiaohongshu app UI.
  * Main component: XiaohongshuApp.
  * Dependencies: useAppStore, Xiaohongshu note/profile helpers, lucide-react icons.
@@ -21,8 +21,8 @@ import {
   UserRound,
 } from 'lucide-react';
 import { useMemo, useRef, useState } from 'react';
-import { useAppStore } from '../store';
-import { cn } from '../lib/utils';
+import { useAppStore } from '../../store';
+import { cn } from '../../lib/utils';
 import type { XiaohongshuNote } from './types';
 import {
   buildGeneratedXiaohongshuNotes,

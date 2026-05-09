@@ -1,6 +1,6 @@
-import { MoreHorizontal, UserPlus } from 'lucide-react';
+﻿import { MoreHorizontal, UserPlus } from 'lucide-react';
 import { useRef } from 'react';
-import { useAppStore } from '../../store';
+import { useAppStore } from '../../../store';
 import { describeChatMessage, formatMessageTime, WeChatAvatar, WeChatGroupAvatar, WeChatTopBar } from '../shared/WeChatShared';
 
 export function WeChatChats({ onAddFriend }: { onAddFriend: () => void }) {

@@ -32,3 +32,12 @@
 - 文档：新增 `docs/superpowers/plans/2026-05-10-app-shell-split.md`，同步 `PROJECT_OUTLINE.md`。
 - 验证：`npx tsx src/shell/appCatalog.test.ts` 通过；全部 `src/**/*.test.ts` 通过；`npm run lint` 通过；`npm run build` 通过，保留 Vite chunk 体积提示；源码中未发现 `crypto.randomUUID` / `randomUUID` 直调。
 - 后续：下一刀可拆 `FeatureScreen` 路由，或继续拆 `Desktop` / `AppIcon` / `Draggable` 到 `src/shell/`。
+
+## 2026-05-10 每个软件独立文件夹
+
+- 范围：微信、B站、小红书、电话四个已成型软件的目录结构。
+- 原因：用户明确要求每个软件是一个文件夹，后续扩展音乐、QQ、备忘录升级时也要遵守 `src/apps/<软件名>/` 的组织方式。
+- 内容：新增 `src/apps/appsStructure.test.ts`；移动微信到 `src/apps/wechat/`，B站到 `src/apps/bilibili/`，小红书到 `src/apps/xiaohongshu/`，电话到 `src/apps/phone/`；软件相关测试也跟随移动；更新 `src/App.tsx` 和 `src/store.ts` import。
+- 文档：新增 `docs/superpowers/plans/2026-05-10-app-folder-layout.md`，同步 `PROJECT_OUTLINE.md`、`docs/wechat.md`、`docs/bilibili-plan.md` 和相关 `模块/*/README.md`。
+- 验证：`npx tsx src/apps/appsStructure.test.ts` 通过；全部 `src/**/*.test.ts` 通过；`npm run lint` 通过；`npm run build` 通过，保留 Vite chunk 体积提示；源码中未发现 `crypto.randomUUID` / `randomUUID` 直调。
+- 后续：下一轮拆未成型软件时，按同样规则建立 `src/apps/music/`、`src/apps/memo/`、`src/apps/qq/` 等目录，不再把软件代码直接放在 `src/` 根目录。

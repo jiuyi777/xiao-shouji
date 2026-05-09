@@ -1,6 +1,6 @@
-import { ChevronRight, CircleUserRound, Grid2X2, Settings, ShoppingBag, Sparkles, Star } from 'lucide-react';
+﻿import { ChevronRight, CircleUserRound, Grid2X2, Settings, ShoppingBag, Sparkles, Star } from 'lucide-react';
 import React, { useRef, useState } from 'react';
-import { useAppStore } from '../../store';
+import { useAppStore } from '../../../store';
 import { clampNumber, describeChatMessage, parseSillyTavernPreset, WeChatAvatar, wechatChatPresets, WeChatTopBar } from '../shared/WeChatShared';
 
 export function WeChatMe() {

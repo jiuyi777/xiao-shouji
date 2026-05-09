@@ -1,4 +1,4 @@
-# B站模块计划
+﻿# B站模块计划
 
 本文档记录小手机内置 B站 app 的第一版设计。目标是先做一个能沉浸式刷 B站条目的独立模块，后续再接 AI 生成、角色投稿、收藏和观看历史。
 
@@ -84,7 +84,7 @@ export interface BilibiliComment {
 
 ## 页面结构
 
-入口仍由 `src/App.tsx` 的 `FeatureScreen` 分发。第一版可以先在 `App.tsx` 内新增 `BilibiliScreen`，等模块稳定后再拆到 `src/bilibili/`。
+入口仍由 `src/App.tsx` 的 `FeatureScreen` 分发。第一版可以先在 `App.tsx` 内新增 `BilibiliScreen`，等模块稳定后再拆到 `src/apps/bilibili/`。
 
 页面建议分三层状态：
 

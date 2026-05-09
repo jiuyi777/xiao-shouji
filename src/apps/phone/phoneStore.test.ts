@@ -1,5 +1,5 @@
-import { strict as assert } from 'node:assert';
-import { useAppStore } from './store';
+﻿import { strict as assert } from 'node:assert';
+import { useAppStore } from '../../store';
 
 useAppStore.setState({ phoneCallRecords: [] } as Partial<ReturnType<typeof useAppStore.getState>>);
 

@@ -1,5 +1,5 @@
-import type { Character } from '../../store';
-import { splitAssistantBubbles, type WeChatReplyStyle } from '../../wechatChat';
+﻿import type { Character } from '../../../store';
+import { splitAssistantBubbles, type WeChatReplyStyle } from '../wechatChat';
 import { parseWeChatAiReply, type WeChatAiParsedPart } from './wechatAiMessages';
 
 export const weChatLifeActionInstruction = [

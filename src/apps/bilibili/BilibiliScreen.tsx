@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Standalone Bilibili app screen.
  * Exports: BilibiliScreen.
  * Dependencies: useAppStore from src/store.ts, bilibiliLogic helpers, lucide-react icons.
@@ -8,7 +8,7 @@ import { ChevronLeft, Heart, MessageCircle, Play, RefreshCw, Star } from 'lucide
 import { useState } from 'react';
 import { buildBilibiliRefreshQuery, buildFallbackBilibiliPayload, parseBilibiliPayload, withBilibiliRoleComments } from './bilibiliLogic';
 import type { BilibiliVideoEntry } from './bilibiliTypes';
-import { useAppStore } from '../store';
+import { useAppStore } from '../../store';
 
 type BilibiliView = 'feed' | 'search' | 'detail';
 

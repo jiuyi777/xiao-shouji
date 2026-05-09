@@ -1,8 +1,8 @@
-import { ChevronLeft, CircleUserRound, Users } from 'lucide-react';
+﻿import { ChevronLeft, CircleUserRound, Users } from 'lucide-react';
 import React from 'react';
-import { cn } from '../../lib/utils';
-import type { Character, ChatMessage } from '../../store';
-import { useAppStore } from '../../store';
+import { cn } from '../../../lib/utils';
+import type { Character, ChatMessage } from '../../../store';
+import { useAppStore } from '../../../store';
 
 export function WeChatTopBar({ title, right, onBack }: { title: string; right?: React.ReactNode; onBack?: () => void }) {
   const { goBack } = useAppStore();

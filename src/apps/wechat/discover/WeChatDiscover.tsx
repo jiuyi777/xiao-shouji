@@ -1,7 +1,7 @@
-import { Camera, Image as ImageIcon, ImagePlus, Plus, SmilePlus, Star, Trash2 } from 'lucide-react';
+﻿import { Camera, Image as ImageIcon, ImagePlus, Plus, SmilePlus, Star, Trash2 } from 'lucide-react';
 import React, { useRef, useState } from 'react';
-import { cn } from '../../lib/utils';
-import { useAppStore } from '../../store';
+import { cn } from '../../../lib/utils';
+import { useAppStore } from '../../../store';
 import { WeChatTopBar } from '../shared/WeChatShared';
 
 export function WeChatDiscover() {

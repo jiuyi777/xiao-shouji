@@ -1,9 +1,9 @@
-import { Camera, MessageCircle, MoreHorizontal, Plus, Phone, Search, Tag, UserPlus, Users } from 'lucide-react';
+﻿import { Camera, MessageCircle, MoreHorizontal, Plus, Phone, Search, Tag, UserPlus, Users } from 'lucide-react';
 import React, { useRef, useState } from 'react';
-import { parseCharacterCard } from '../../lib/charaParser';
-import { cn } from '../../lib/utils';
-import type { Character } from '../../store';
-import { useAppStore } from '../../store';
+import { parseCharacterCard } from '../../../lib/charaParser';
+import { cn } from '../../../lib/utils';
+import type { Character } from '../../../store';
+import { useAppStore } from '../../../store';
 import { WeChatAvatar, WeChatGroupAvatar, WeChatTopBar } from '../shared/WeChatShared';
 
 export function WeChatContacts() {

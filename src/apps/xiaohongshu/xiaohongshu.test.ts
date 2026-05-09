@@ -1,4 +1,4 @@
-import assert from 'node:assert/strict';
+﻿import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
   buildGeneratedXiaohongshuNotes,
@@ -7,8 +7,8 @@ import {
   getProfileNotes,
   getSortedXiaohongshuNotes,
   getXiaohongshuFeedNotes,
-} from './xiaohongshu/xiaohongshuLogic';
-import type { XiaohongshuNote } from './xiaohongshu/types';
+} from './xiaohongshuLogic';
+import type { XiaohongshuNote } from './types';
 
 const storage = new Map<string, string>();
 Object.defineProperty(globalThis, 'localStorage', {
@@ -161,7 +161,7 @@ const generatedWithGallery = buildGeneratedXiaohongshuNotes({
 
 assert.ok(generatedWithGallery.some((note) => note.imageUrl === 'photo-a.png' || note.imageUrl === 'photo-b.png'));
 
-const { useAppStore } = await import('./store');
+const { useAppStore } = await import('../../store');
 
 useAppStore.setState({ xiaohongshuNotes: [], xiaohongshuFollowingIds: [] } as Partial<ReturnType<typeof useAppStore.getState>>);
 
@@ -190,8 +190,8 @@ assert.deepEqual(useAppStore.getState().xiaohongshuFollowingIds, []);
 useAppStore.getState().deleteXiaohongshuNote(noteId);
 assert.equal(useAppStore.getState().xiaohongshuNotes.length, 0);
 
-const xiaohongshuAppSource = readFileSync(new URL('./xiaohongshu/XiaohongshuApp.tsx', import.meta.url), 'utf8');
-const globalCss = readFileSync(new URL('./index.css', import.meta.url), 'utf8');
+const xiaohongshuAppSource = readFileSync(new URL('./XiaohongshuApp.tsx', import.meta.url), 'utf8');
+const globalCss = readFileSync(new URL('../../index.css', import.meta.url), 'utf8');
 
 assert.match(xiaohongshuAppSource, /xhs-app/);
 assert.match(globalCss, /\.theme-gothic \.xhs-app/);

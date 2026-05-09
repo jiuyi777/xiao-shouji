@@ -1,4 +1,4 @@
-# 小手机项目大纲
+﻿# 小手机项目大纲
 
 本文件是维护 AI 的导航图。后续修改代码前先读这里，再去目标文件顶部注释定位函数。
 
@@ -30,12 +30,14 @@
 - `src/index.css`：全局 CSS。包含主题变量、手机壳、桌面、通用控件、微信页、聊天气泡、哥特覆盖和滚动条隐藏。
 - `src/lib/utils.ts`：工具函数。`cn` 合并 className，`createId` 生成兼容 ID。
 - `src/lib/charaParser.ts`：酒馆/角色卡解析。负责 PNG/JSON 角色卡、头像提取和角色字段归一化。
-- `src/wechat/ai/`：微信 AI 提示词、活人感规则、转账/红包/购物/表情动作解析和新手教程。
-- `src/wechat/stickers/`：微信 emoji/sticker 风格表情包 starter manifest 和来源说明。
-- `src/xiaohongshu/XiaohongshuApp.tsx`：小红书独立 App。包含推荐/关注/附近首页、玩家形象编辑、相册取图、笔记发布、我的发布、详情页、标签筛选、关注、收藏和删除。
-- `src/xiaohongshu/types.ts`：小红书条目类型 `XiaohongshuNote` 和玩家形象 `XiaohongshuProfile`。
-- `src/xiaohongshu/xiaohongshuLogic.ts`：小红书条目归一化、玩家形象归一化、角色/世界书笔记生成、推荐/关注/附近/我的筛选、标签筛选和 AI 上下文摘要。
-- `src/bilibili/`：B站模块真实代码目录。`BilibiliScreen.tsx` 负责视频流、搜索和详情页；`bilibiliLogic.ts` 负责 B站-only fallback、模型 JSON 解析和外站过滤；`bilibiliTypes.ts` 维护 B站条目和搜索记录类型。
+- `src/apps/`：每个真实手机软件的独立代码目录。软件自己的 UI、逻辑和测试优先放在 `src/apps/<软件名>/`，共享壳、状态、工具和全局样式仍留在 `src/` 对应公共目录。
+- `src/apps/wechat/ai/`：微信 AI 提示词、活人感规则、转账/红包/购物/表情动作解析和新手教程。
+- `src/apps/wechat/stickers/`：微信 emoji/sticker 风格表情包 starter manifest 和来源说明。
+- `src/apps/phone/PhoneScreen.tsx`：电话模块真实 UI。包含最近通话、角色拨号、呼叫中、来电中、通话中、通话详情、短口语电话 AI 回复和写入聊天记录按钮。
+- `src/apps/xiaohongshu/XiaohongshuApp.tsx`：小红书独立 App。包含推荐/关注/附近首页、玩家形象编辑、相册取图、笔记发布、我的发布、详情页、标签筛选、关注、收藏和删除。
+- `src/apps/xiaohongshu/types.ts`：小红书条目类型 `XiaohongshuNote` 和玩家形象 `XiaohongshuProfile`。
+- `src/apps/xiaohongshu/xiaohongshuLogic.ts`：小红书条目归一化、玩家形象归一化、角色/世界书笔记生成、推荐/关注/附近/我的筛选、标签筛选和 AI 上下文摘要。
+- `src/apps/bilibili/`：B站模块真实代码目录。`BilibiliScreen.tsx` 负责视频流、搜索和详情页；`bilibiliLogic.ts` 负责 B站-only fallback、模型 JSON 解析和外站过滤；`bilibiliTypes.ts` 维护 B站条目和搜索记录类型。
 - `src/shell/appCatalog.tsx`：手机壳桌面 App 目录。维护桌面分页图标、Dock 图标和 catalog 测试用 screen 列表；`src/App.tsx` 仍负责实际渲染。
 - `src/shell/appCatalog.test.ts`：桌面 App 目录结构测试，校验图标数量、分页、Dock 顺序和 screen 去重。
 - `src/components/WeChatLayout.tsx`：未来微信布局拆分占位；当前没有接入。
@@ -86,7 +88,7 @@
 - 聊天房间/连续发送/图片发送/表情注释/人设世界书上下文/上下文消息数/接口失败重试：`src/App.tsx` -> `ChatScreen`。
 - 聊天气泡/多气泡拆分/图片/语音条/转写/播放中状态：`src/App.tsx` -> `Bubble` 和 `splitAssistantBubbles`。
 - 微信聊天预设/导入酒馆预设：`src/App.tsx` -> `WeChatMe` 的设置视图；解析函数为 `parseSillyTavernPreset`，状态在 `src/store.ts` 的 `chatPreset*` 字段。
-- 微信生活化 AI：`src/wechat/ai/` -> `buildWeChatSystemPrompt`、`parseWeChatReplyParts`；`ChatScreen` 负责把 AI 动作转为转账、红包、购物、表情包消息。
+- 微信生活化 AI：`src/apps/wechat/ai/` -> `buildWeChatSystemPrompt`、`parseWeChatReplyParts`；`ChatScreen` 负责把 AI 动作转为转账、红包、购物、表情包消息。
 - 微信群聊：`src/App.tsx` -> `WeChatChats` 和 `WeChatContacts`；状态在 `src/store.ts` 的 `groupChats`，聊天复用 `chatSessions`，群头像由 `WeChatGroupAvatar` 拼成员头像，AI 回复按成员逐个发言。
 - 微信朋友资料：`src/App.tsx` -> `WeChatContacts` 内部 `profileId` 视图。
 - 微信标签筛选：`src/App.tsx` -> `WeChatContacts` 内部 `activeTagFilter`，状态在 `src/store.ts` 的 `contactTags`。
@@ -95,8 +97,8 @@
 - 日历：`src/App.tsx` -> `CalendarScreen`，状态在 `src/store.ts` 的 `CalendarEvent[] calendarEvents`，支持月视图、今天页、日程列表、编辑页、详情页、收藏、筛选、经期快捷记录、节日显示和从日记/备忘录转入；今天页“接下来”只展示用户记录的未来日程，最近节日单独展示两个；查手机只读取 char/shared 日程摘要。
 - 相册：`src/App.tsx` -> `GalleryScreen`，状态在 `src/store.ts` 的 `GalleryPhoto[] galleryPhotos` 和 `string[] galleryTags`，支持上传照片自动记录日期、按日期分组、点选/创建标签、设置 char 可读范围、char 评价、相簿筛选、收藏、隐藏，以及从桌面图床/微信照片墙导入；查手机只读取允许 char 读取的照片摘要。
 - 备忘录：当前 `src/App.tsx` -> `MemoScreen` 仍是简单字符串列表；下一步按 `docs/memo-plan.md` 升级为 `MemoEntry[]`、标签、置顶、锁定、提醒和转日历。
-- 小红书：`src/App.tsx` -> `XiaohongshuApp`，真实代码在 `src/xiaohongshu/`；状态在 `src/store.ts` 的 `XiaohongshuProfile xiaohongshuProfile`、`XiaohongshuNote[] xiaohongshuNotes` 和 `string[] xiaohongshuFollowingIds`，支持玩家形象编辑、推荐/关注/附近首页、刷新生成角色和世界路人笔记、从相册取图发布、我的发布、标签筛选、详情、关注、收藏和删除；没有相册图时不伪造笔记封面，AI 上下文只读取文字版小红书条目。
-- B站：`src/App.tsx` -> `BilibiliScreen`，真实代码在 `src/bilibili/`；状态在 `src/store.ts` 的 `BilibiliVideoEntry[] bilibiliEntries` 和 `BilibiliSearchRecord[] bilibiliSearches`，支持视频流、搜索生成、详情页、弹幕、评论、收藏和观看记录；解析模型结果时只保留 B站或 `phone://bilibili/` 模拟条目。
+- 小红书：`src/App.tsx` -> `XiaohongshuApp`，真实代码在 `src/apps/xiaohongshu/`；状态在 `src/store.ts` 的 `XiaohongshuProfile xiaohongshuProfile`、`XiaohongshuNote[] xiaohongshuNotes` 和 `string[] xiaohongshuFollowingIds`，支持玩家形象编辑、推荐/关注/附近首页、刷新生成角色和世界路人笔记、从相册取图发布、我的发布、标签筛选、详情、关注、收藏和删除；没有相册图时不伪造笔记封面，AI 上下文只读取文字版小红书条目。
+- B站：`src/App.tsx` -> `BilibiliScreen`，真实代码在 `src/apps/bilibili/`；状态在 `src/store.ts` 的 `BilibiliVideoEntry[] bilibiliEntries` 和 `BilibiliSearchRecord[] bilibiliSearches`，支持视频流、搜索生成、详情页、弹幕、评论、收藏和观看记录；解析模型结果时只保留 B站或 `phone://bilibili/` 模拟条目。
 - 文本模型设置/拉取模型：`src/App.tsx` -> `SettingsScreen`，接口工具函数为 `fetchModelList`、`requestChatCompletion`。
 - 收藏页/订单与卡包：`src/App.tsx` -> `WeChatMe` 的内部视图。
 - 全局状态和迁移：`src/store.ts` -> `useAppStore` persist migrate。当前 persist version 为 42，补齐微信生活消息、电话、日历、相册、音乐、小红书、B站等旧数据兼容字段。
@@ -120,7 +122,7 @@
 - 新增/接入 `src/pages/*`：把占位说明改为真实职责，并在本文件登记入口。
 ## 2026-05-07 电话模块补充
 
-- `src/PhoneScreen.tsx`：电话模块真实 UI。包含最近通话、角色拨号、呼叫中、来电中、通话中、通话详情、短口语电话 AI 回复和写入聊天记录按钮。
+- `src/apps/phone/PhoneScreen.tsx`：电话模块真实 UI。包含最近通话、角色拨号、呼叫中、来电中、通话中、通话详情、短口语电话 AI 回复和写入聊天记录按钮。
 - `src/App.tsx`：仍负责应用壳和 `FeatureScreen` 分发；电话 screen 只 import 并渲染 `PhoneScreen`，不要再把电话业务逻辑塞回本文件。
 - `src/store.ts`：新增 `PhoneCallRecord[] phoneCallRecords` 和电话记录新增、更新、删除、收藏 actions；TTS 配置支持 browser/local/openai/gemini；当前 persist version 为 41。
 - `src/tts.ts`：TTS provider 工具。负责浏览器内置语音、本地 HTTP、OpenAI `/audio/speech`、Gemini `generateContent` 音频请求构造和播放。

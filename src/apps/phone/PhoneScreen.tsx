@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Real phone module UI extracted from App.tsx.
  * Main component/functions: PhoneScreen, requestPhoneLine, filterPhoneRecordsForView, getPhoneListConfig, buildCallSummary.
  * State dependencies: useAppStore phoneCallRecords/actions, characters, model API config, chat addMessage for optional call-note export.
@@ -21,9 +21,9 @@ import {
   Volume2,
 } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react';
-import { Character, PhoneCallRecord, PhoneCallStatus, PhoneCallTranscriptLine, useAppStore } from './store';
-import { cn, createId } from './lib/utils';
-import { speakWithConfiguredTts } from './tts';
+import { Character, PhoneCallRecord, PhoneCallStatus, PhoneCallTranscriptLine, useAppStore } from '../../store';
+import { cn, createId } from '../../lib/utils';
+import { speakWithConfiguredTts } from '../../tts';
 
 type PhoneListView = 'recent' | 'missed' | 'outgoing' | 'incoming';
 type PhoneView = 'home' | PhoneListView | 'dial' | 'ringing' | 'active' | 'detail';

@@ -1,11 +1,11 @@
-# B站模块
+﻿# B站模块
 
 ## 当前入口
 
 - 桌面第二屏 `B站` 图标：`src/App.tsx` -> `FeatureScreen` -> `BilibiliScreen`。
-- 真实 UI：`src/bilibili/BilibiliScreen.tsx`。
-- 生成和解析：`src/bilibili/bilibiliLogic.ts`。
-- 类型：`src/bilibili/bilibiliTypes.ts`。
+- 真实 UI：`src/apps/bilibili/BilibiliScreen.tsx`。
+- 生成和解析：`src/apps/bilibili/bilibiliLogic.ts`。
+- 类型：`src/apps/bilibili/bilibiliTypes.ts`。
 - 状态：`src/store.ts` 的 `bilibiliEntries`、`bilibiliSearches` 和相关 actions。
 
 ## 当前能力

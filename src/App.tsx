@@ -6,7 +6,7 @@
  * delay, formatMessageTime, clampNumber,
  * CalendarScreen, GalleryScreen, ContactsScreen, SettingsScreen, ThemesScreen, VideoCallScreen.
  * State dependencies: useAppStore from src/store.ts; Character/Screen/ThemeType/CalendarEvent/GalleryPhoto types.
- * Utility dependencies: pageApps/dockApps from src/shell/appCatalog.tsx, PhoneScreen from src/PhoneScreen.tsx, BilibiliScreen from src/bilibili/BilibiliScreen.tsx, speakWithConfiguredTts from src/tts.ts, parseCharacterCard from src/lib/charaParser.ts, cn/createId from src/lib/utils.ts.
+ * Utility dependencies: pageApps/dockApps from src/shell/appCatalog.tsx, PhoneScreen from src/apps/phone/PhoneScreen.tsx, BilibiliScreen from src/apps/bilibili/BilibiliScreen.tsx, speakWithConfiguredTts from src/tts.ts, parseCharacterCard from src/lib/charaParser.ts, cn/createId from src/lib/utils.ts.
  * Styling dependencies: src/index.css owns theme variables, phone shell, WeChat, chat, desktop styles.
  * Maintenance note: this file is still the active UI entry; src/pages/* are placeholders until routed in.
  */
@@ -70,22 +70,22 @@ import {
 } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import { parseCharacterCard } from './lib/charaParser';
-import { PhoneScreen } from './PhoneScreen';
+import { PhoneScreen } from './apps/phone/PhoneScreen';
 import { speakWithConfiguredTts } from './tts';
 import { BrowserSearchResult, CalendarEvent, Character, ChatMessage, CustomWidget, DiaryEntry, GalleryPhoto, LayoutMode, MemoEntry, MemoEntryColor, MemoEntryType, MusicPlaylist, MusicTrack, Screen, StickerItem, TheaterScene, TheaterWorldBookEntry, ThemeType, useAppStore } from './store';
 import { cn, createId } from './lib/utils';
-import { BilibiliScreen } from './bilibili/BilibiliScreen';
-import { XiaohongshuApp } from './xiaohongshu/XiaohongshuApp';
-import { buildXiaohongshuContext } from './xiaohongshu/xiaohongshuLogic';
-import type { XiaohongshuNote } from './xiaohongshu/types';
+import { BilibiliScreen } from './apps/bilibili/BilibiliScreen';
+import { XiaohongshuApp } from './apps/xiaohongshu/XiaohongshuApp';
+import { buildXiaohongshuContext } from './apps/xiaohongshu/xiaohongshuLogic';
+import type { XiaohongshuNote } from './apps/xiaohongshu/types';
 import { dockApps, pageApps } from './shell/appCatalog';
-import { buildWeChatSystemPrompt, fallbackWeChatReply, parseWeChatReplyParts } from './wechat/ai/wechatAi';
-import type { WeChatAiParsedPart } from './wechat/ai/wechatAiMessages';
-import { WeChatChats } from './wechat/chats/WeChatChats';
-import { WeChatContacts } from './wechat/contacts/WeChatContacts';
-import { WeChatDiscover } from './wechat/discover/WeChatDiscover';
-import { WeChatMe } from './wechat/me/WeChatMe';
-import { WeChatAvatar } from './wechat/shared/WeChatShared';
+import { buildWeChatSystemPrompt, fallbackWeChatReply, parseWeChatReplyParts } from './apps/wechat/ai/wechatAi';
+import type { WeChatAiParsedPart } from './apps/wechat/ai/wechatAiMessages';
+import { WeChatChats } from './apps/wechat/chats/WeChatChats';
+import { WeChatContacts } from './apps/wechat/contacts/WeChatContacts';
+import { WeChatDiscover } from './apps/wechat/discover/WeChatDiscover';
+import { WeChatMe } from './apps/wechat/me/WeChatMe';
+import { WeChatAvatar } from './apps/wechat/shared/WeChatShared';
 import {
   buildTheaterLengthInstruction,
   buildTheaterSystemPrompt,

@@ -1,15 +1,15 @@
-# 微信
+﻿# 微信
 
 当前真实代码入口已经从 `src/App.tsx` 开始拆分：
 
 - 微信容器：`src/App.tsx` -> `WeChatApp`
-- 聊天列表：`src/wechat/chats/WeChatChats.tsx`
-- 通讯录/导入酒馆卡/群聊/联系人标签：`src/wechat/contacts/WeChatContacts.tsx`
-- 发现页入口/朋友圈/照片墙/表情包库：`src/wechat/discover/WeChatDiscover.tsx`
-- 我页面/收藏/订单与卡包/微信聊天预设：`src/wechat/me/WeChatMe.tsx`
-- 微信页签共享顶栏、头像、群头像、预设工具：`src/wechat/shared/WeChatShared.tsx`
-- 微信 AI 活人感、生活动作解析、新手教程：`src/wechat/ai/`
-- 微信 emoji/sticker 风格表情包 starter：`src/wechat/stickers/`
+- 聊天列表：`src/apps/wechat/chats/WeChatChats.tsx`
+- 通讯录/导入酒馆卡/群聊/联系人标签：`src/apps/wechat/contacts/WeChatContacts.tsx`
+- 发现页入口/朋友圈/照片墙/表情包库：`src/apps/wechat/discover/WeChatDiscover.tsx`
+- 我页面/收藏/订单与卡包/微信聊天预设：`src/apps/wechat/me/WeChatMe.tsx`
+- 微信页签共享顶栏、头像、群头像、预设工具：`src/apps/wechat/shared/WeChatShared.tsx`
+- 微信 AI 活人感、生活动作解析、新手教程：`src/apps/wechat/ai/`
+- 微信 emoji/sticker 风格表情包 starter：`src/apps/wechat/stickers/`
 - 聊天房间：`src/App.tsx` -> `ChatScreen`
 - 气泡/语音条/转写：`src/App.tsx` -> `Bubble`
 

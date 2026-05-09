@@ -1,23 +1,23 @@
-/**
+﻿/**
  * Global Zustand store for the small phone prototype.
  * Exports/types: Character, ChatMessage, ChatSession, PhoneCallRecord, DiaryEntry, CalendarEvent, GalleryPhoto, XiaohongshuNote, XiaohongshuProfile, CustomWidget, ThemeType, Screen, useAppStore.
  * Store actions: addCharacter, updateCharacter, openChat, add/delete/favorite/recall message with optional speakerId,
  * phone call record add/update/delete/favorite helpers, theme/profile/photo/sticker/group/tag/order/API/chat-preset setters,
  * diary/calendar/gallery/memo/xiaohongshu/B站 helpers, desktop layout/widget helpers, migration for persisted data and default diary cleanup.
- * Dependencies: zustand persist middleware, createId from src/lib/utils.ts, Bilibili types from src/bilibili/bilibiliTypes.ts, defaultTtsConfig from src/tts.ts.
+ * Dependencies: zustand persist middleware, createId from src/lib/utils.ts, Bilibili types from src/apps/bilibili/bilibiliTypes.ts, defaultTtsConfig from src/tts.ts.
  * Persistence: localStorage key char-phone-framework; update version + migrate whenever old data must be corrected.
  */
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { BilibiliSearchRecord, BilibiliVideoEntry } from './bilibili/bilibiliTypes';
+import type { BilibiliSearchRecord, BilibiliVideoEntry } from './apps/bilibili/bilibiliTypes';
 import { createId } from './lib/utils';
 import type { TheaterLengthKey, TheaterStyleKey, TheaterTopicDraft } from './theaterLogic';
 import { defaultTtsConfig, type TtsConfig } from './tts';
-import { normalizeXiaohongshuNotes, normalizeXiaohongshuProfile } from './xiaohongshu/xiaohongshuLogic';
-import type { XiaohongshuNote, XiaohongshuProfile } from './xiaohongshu/types';
+import { normalizeXiaohongshuNotes, normalizeXiaohongshuProfile } from './apps/xiaohongshu/xiaohongshuLogic';
+import type { XiaohongshuNote, XiaohongshuProfile } from './apps/xiaohongshu/types';
 
-export type { XiaohongshuNote, XiaohongshuProfile } from './xiaohongshu/types';
-import { starterStickerItems } from './wechat/stickers/stickerPacks';
+export type { XiaohongshuNote, XiaohongshuProfile } from './apps/xiaohongshu/types';
+import { starterStickerItems } from './apps/wechat/stickers/stickerPacks';
 
 export interface Character {
   id: string;

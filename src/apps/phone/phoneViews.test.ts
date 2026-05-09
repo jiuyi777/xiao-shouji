@@ -1,6 +1,6 @@
-import { strict as assert } from 'node:assert';
+﻿import { strict as assert } from 'node:assert';
 import { filterPhoneRecordsForView, getPhoneListConfig } from './PhoneScreen';
-import type { PhoneCallRecord } from './store';
+import type { PhoneCallRecord } from '../../store';
 
 const baseRecord = {
   characterId: 'char-a',

@@ -4,10 +4,10 @@ import { join } from 'node:path';
 
 const root = process.cwd();
 const expectedModules = [
-  'src/wechat/chats/WeChatChats.tsx',
-  'src/wechat/contacts/WeChatContacts.tsx',
-  'src/wechat/discover/WeChatDiscover.tsx',
-  'src/wechat/me/WeChatMe.tsx',
+  'src/apps/wechat/chats/WeChatChats.tsx',
+  'src/apps/wechat/contacts/WeChatContacts.tsx',
+  'src/apps/wechat/discover/WeChatDiscover.tsx',
+  'src/apps/wechat/me/WeChatMe.tsx',
 ];
 
 for (const modulePath of expectedModules) {

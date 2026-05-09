@@ -1,11 +1,11 @@
-# 小红书
+﻿# 小红书
 
 当前真实代码入口：
 
 - App 入口：`src/App.tsx` -> `FeatureScreen` -> `XiaohongshuApp`
-- 小红书模块：`src/xiaohongshu/XiaohongshuApp.tsx`
-- 小红书类型：`src/xiaohongshu/types.ts`
-- 小红书逻辑：`src/xiaohongshu/xiaohongshuLogic.ts`
+- 小红书模块：`src/apps/xiaohongshu/XiaohongshuApp.tsx`
+- 小红书类型：`src/apps/xiaohongshu/types.ts`
+- 小红书逻辑：`src/apps/xiaohongshu/xiaohongshuLogic.ts`
 
 相关状态：
 
