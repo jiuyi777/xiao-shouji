@@ -18,6 +18,7 @@ import {
   Settings,
   Shield,
   Sparkles,
+  Trash2,
   Users,
   Zap,
 } from 'lucide-react';
@@ -34,6 +35,7 @@ import { Header, Panel, Pill, Field, Row, Empty, Avatar } from '../shared/AppPri
 import { describeChatMessage } from '../shared/aiText';
 import { themeOptions } from '../../themes/themeOptions';
 import { appPresetDefinitions, roleMap, type AppPresetEntry, type AppPresetKey, type GeminiPresetRole } from '../../presets/softwarePresets';
+import { parseWorldBookDraft, stringifyWorldBookForEditing } from './worldBookText';
 
 const presetCards = [
   ['手机沉浸破限预设', '允许模拟微信、QQ、电话、日记、查手机等手机行为。'],
@@ -987,23 +989,6 @@ export function PresetsScreen() {
   );
 }
 
-function stringifyWorldBook(worldBook: unknown) {
-  if (typeof worldBook === 'string') return repairMojibake(worldBook);
-  try {
-    return repairMojibake(JSON.stringify(worldBook || {}, null, 2));
-  } catch {
-    return '';
-  }
-}
-
-function parseWorldBookDraft(draft: string) {
-  try {
-    return JSON.parse(repairMojibake(draft) || '{}');
-  } catch {
-    return repairMojibake(draft);
-  }
-}
-
 function repairMojibake(text: string) {
   if (!/[ÃÂâäåæçèé]/.test(text)) return text;
   try {
@@ -1018,7 +1003,7 @@ function repairMojibake(text: string) {
 }
 
 export function ContactsScreen() {
-  const { characters, addCharacter, updateCharacter, openChat } = useAppStore();
+  const { characters, addCharacter, updateCharacter, deleteCharacter, openChat } = useAppStore();
   const inputRef = useRef<HTMLInputElement>(null);
   const [status, setStatus] = useState('支持导入酒馆 PNG/JSON 角色卡。');
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -1041,7 +1026,7 @@ export function ContactsScreen() {
   };
 
   if (character) {
-    const worldBookText = worldBookDrafts[character.id] ?? stringifyWorldBook(character.worldBook);
+    const worldBookText = worldBookDrafts[character.id] ?? stringifyWorldBookForEditing(character.worldBook);
     const saveCharacter = () => {
       const draft = worldBookDrafts[character.id];
       if (draft !== undefined) {
@@ -1049,11 +1034,23 @@ export function ContactsScreen() {
       }
       setEditingId(null);
     };
+    const removeCharacter = () => {
+      const confirmed = window.confirm(`确定删除「${character.name}」吗？通讯录、微信聊天、群聊成员、电话、日记、相册、备忘录、音乐等关联记录都会一起删除。`);
+      if (!confirmed) return;
+      deleteCharacter(character.id);
+      setWorldBookDrafts((state) => {
+        const next = { ...state };
+        delete next[character.id];
+        return next;
+      });
+      setEditingId(null);
+      setStatus(`已删除：${character.name}`);
+    };
     return (
-      <section className="h-full overflow-y-auto pb-8">
+      <section className="character-profile-screen h-full overflow-y-auto pb-4">
         <Header title="角色资料" subtitle="人设、世界书和开场白都可以自己改" onSave={saveCharacter} />
-        <Panel>
-          <div className="mb-4 flex items-center gap-3">
+        <Panel className="character-profile-panel">
+          <div className="mb-2 flex items-center gap-3">
             <Avatar character={character} />
             <div className="min-w-0">
               <p className="text-lg font-black">{character.name}</p>
@@ -1064,27 +1061,33 @@ export function ContactsScreen() {
             <input value={character.name} onChange={(event) => updateCharacter(character.id, { name: event.target.value })} className="hand-input w-full" />
           </Field>
           <Field icon={<BookOpen />} label="人设 / Description">
-            <textarea value={character.description} onChange={(event) => updateCharacter(character.id, { description: event.target.value })} className="hand-input min-h-28 w-full resize-none" />
+            <textarea value={character.description} onChange={(event) => updateCharacter(character.id, { description: event.target.value })} className="hand-input min-h-20 w-full resize-none" />
           </Field>
           <Field icon={<Sparkles />} label="性格 / Personality">
-            <textarea value={character.personality} onChange={(event) => updateCharacter(character.id, { personality: event.target.value })} className="hand-input min-h-24 w-full resize-none" />
+            <textarea value={character.personality} onChange={(event) => updateCharacter(character.id, { personality: event.target.value })} className="hand-input min-h-20 w-full resize-none" />
           </Field>
           <Field icon={<MessageCircle />} label="开场白">
-            <textarea value={character.firstMessage} onChange={(event) => updateCharacter(character.id, { firstMessage: event.target.value })} className="hand-input min-h-24 w-full resize-none" />
+            <textarea value={character.firstMessage} onChange={(event) => updateCharacter(character.id, { firstMessage: event.target.value })} className="hand-input min-h-20 w-full resize-none" />
           </Field>
           <Field icon={<Shield />} label="系统提示词">
-            <textarea value={character.systemPrompt} onChange={(event) => updateCharacter(character.id, { systemPrompt: event.target.value })} className="hand-input min-h-24 w-full resize-none" />
+            <textarea value={character.systemPrompt} onChange={(event) => updateCharacter(character.id, { systemPrompt: event.target.value })} className="hand-input min-h-20 w-full resize-none" />
           </Field>
-          <Field icon={<FileText />} label="世界书 / World Book JSON">
+          <Field icon={<FileText />} label="世界书">
             <textarea
               value={worldBookText}
               onChange={(event) => setWorldBookDrafts((state) => ({ ...state, [character.id]: event.target.value }))}
-              className="hand-input min-h-32 w-full resize-none font-mono text-xs"
+              className="hand-input min-h-28 w-full resize-y text-sm leading-6"
             />
           </Field>
-          <div className="grid grid-cols-2 gap-3">
-            <button onClick={() => openChat(character.id, 'wechat')} className="fetch-button">微信聊天</button>
-            <button onClick={saveCharacter} className="fetch-button bg-[#fff0bd]">保存返回</button>
+          <div className="character-profile-actions">
+            <div className="grid grid-cols-2 gap-3">
+              <button onClick={() => openChat(character.id, 'wechat')} className="fetch-button">微信聊天</button>
+              <button onClick={saveCharacter} className="fetch-button bg-[#fff0bd]">保存返回</button>
+            </div>
+            <button type="button" onClick={removeCharacter} className="character-profile-delete-button">
+              <Trash2 className="h-5 w-5" />
+              删除角色
+            </button>
           </div>
         </Panel>
       </section>

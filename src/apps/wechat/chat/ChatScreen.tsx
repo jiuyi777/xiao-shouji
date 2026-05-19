@@ -35,6 +35,12 @@ import { delay, describeChatMessage, getCharacterPrompt, requestChatCompletion }
 import { buildWeChatSystemPrompt, fallbackWeChatReply, parseWeChatReplyParts } from '../ai/wechatAi';
 import type { WeChatAiParsedPart } from '../ai/wechatAiMessages';
 import { formatMessageTime, WeChatAvatar } from '../shared/WeChatShared';
+import {
+  canAcceptLifeCard,
+  getPendingResponseMode,
+  shouldAutoReplyAfterUserAction,
+  type PendingChatDraftKind,
+} from './wechatInteraction';
 import { isUnreadVoiceMessage } from './voiceUnread';
 import { VoiceMessageBubble } from './VoiceMessageBubble';
 
@@ -46,7 +52,7 @@ function speak(text: string) {
 type PendingChatDraft = {
   content: string;
   replyTo?: string;
-  kind: 'text' | 'voice' | 'image' | 'sticker';
+  kind: PendingChatDraftKind;
   sourceMessageId?: string;
 };
 
@@ -58,6 +64,7 @@ export function ChatScreen() {
     groupChats,
     chatSessions,
     addMessage,
+    updateMessage,
     deleteMessage,
     toggleMessageFavorite,
     recallMessage,
@@ -95,6 +102,9 @@ export function ChatScreen() {
   const [isTyping, setIsTyping] = useState(false);
   const [activeToolMessageId, setActiveToolMessageId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatScreenRef = useRef<HTMLElement>(null);
+  const inputBarRef = useRef<HTMLDivElement>(null);
+  const keyboardLiftRef = useRef(0);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const directCharacter = characters.find((item) => item.id === activeChatId);
   const activeGroup = groupChats.find((item) => item.id === activeChatId);
@@ -144,6 +154,44 @@ export function ChatScreen() {
     return () => {
       viewport.removeEventListener('resize', scrollToLatest);
       viewport.removeEventListener('scroll', scrollToLatest);
+    };
+  }, [activeChatId]);
+
+  const updateKeyboardLift = () => {
+    const screen = chatScreenRef.current;
+    const inputBar = inputBarRef.current;
+    if (!screen || !inputBar) return;
+    const activeElement = document.activeElement;
+    const isEditingInChat = !!activeElement
+      && screen.contains(activeElement)
+      && (activeElement.tagName === 'TEXTAREA' || activeElement.tagName === 'INPUT');
+    if (!isEditingInChat) {
+      keyboardLiftRef.current = 0;
+      screen.style.setProperty('--wechat-keyboard-lift', '0px');
+      return;
+    }
+    const viewport = window.visualViewport;
+    const visibleBottom = viewport ? viewport.offsetTop + viewport.height : window.innerHeight;
+    const rect = inputBar.getBoundingClientRect();
+    const nextLift = Math.max(0, Math.ceil(keyboardLiftRef.current + rect.bottom - visibleBottom + 8));
+    keyboardLiftRef.current = nextLift;
+    screen.style.setProperty('--wechat-keyboard-lift', `${nextLift}px`);
+  };
+
+  useEffect(() => {
+    const scheduleUpdate = () => window.setTimeout(updateKeyboardLift, 40);
+    const clearLift = () => {
+      keyboardLiftRef.current = 0;
+      chatScreenRef.current?.style.setProperty('--wechat-keyboard-lift', '0px');
+    };
+    window.addEventListener('resize', scheduleUpdate);
+    window.visualViewport?.addEventListener('resize', scheduleUpdate);
+    window.visualViewport?.addEventListener('scroll', scheduleUpdate);
+    return () => {
+      window.removeEventListener('resize', scheduleUpdate);
+      window.visualViewport?.removeEventListener('resize', scheduleUpdate);
+      window.visualViewport?.removeEventListener('scroll', scheduleUpdate);
+      clearLift();
     };
   }, [activeChatId]);
 
@@ -360,23 +408,35 @@ export function ChatScreen() {
     if (ttsEnabled && responseMode === 'voice' && !activeGroup) speak(spokenReplies.join('\n'));
   };
 
+  const requestReplyForDrafts = async (drafts: PendingChatDraft[], responseMode = getPendingResponseMode(drafts)) => {
+    if (sending || drafts.length === 0) return;
+    setSending(true);
+    try {
+      await addAssistantReply(drafts, responseMode);
+      setPendingUserDrafts([]);
+      setFailedDraft(null);
+    } catch (error) {
+      setFailedDraft({ drafts, mode: responseMode, error: error instanceof Error ? error.message : undefined });
+    } finally {
+      setIsTyping(false);
+      setSending(false);
+    }
+  };
+
+  const queueUserDraft = (draft: PendingChatDraft) => {
+    const nextDrafts = [...pendingUserDrafts, draft];
+    setPendingUserDrafts(nextDrafts);
+    if (shouldAutoReplyAfterUserAction(draft.kind)) {
+      void requestReplyForDrafts(nextDrafts);
+    }
+  };
+
   const send = async () => {
     const content = input.trim();
     if (sending) return;
     if (!content) {
       if (pendingUserDrafts.length === 0) return;
-      const responseMode = pendingUserDrafts.some((draft) => draft.kind === 'voice') ? 'voice' : 'text';
-      setSending(true);
-      try {
-        await addAssistantReply(pendingUserDrafts, responseMode);
-        setPendingUserDrafts([]);
-        setFailedDraft(null);
-      } catch (error) {
-        setFailedDraft({ drafts: pendingUserDrafts, mode: responseMode, error: error instanceof Error ? error.message : undefined });
-      } finally {
-        setIsTyping(false);
-        setSending(false);
-      }
+      await requestReplyForDrafts(pendingUserDrafts);
       return;
     }
     const kind = mode === 'voice' ? 'voice' : 'text';
@@ -391,7 +451,7 @@ export function ChatScreen() {
       transcript: kind === 'voice' ? content : undefined,
       replyTo,
     });
-    setPendingUserDrafts((drafts) => [...drafts, { content, replyTo, kind }]);
+    queueUserDraft({ content, replyTo, kind });
     setInput('');
     setReplyDraft(null);
     setFailedDraft(null);
@@ -423,7 +483,7 @@ export function ChatScreen() {
       stickerLabel: sticker.label,
       replyTo,
     });
-    setPendingUserDrafts((drafts) => [...drafts, { content: `表情包：${sticker.label}`, replyTo, kind: 'sticker' }]);
+    queueUserDraft({ content: `表情包：${sticker.label}`, replyTo, kind: 'sticker' });
     setReplyDraft(null);
     setFailedDraft(null);
     setShowPlusPanel(false);
@@ -467,7 +527,7 @@ export function ChatScreen() {
         stickerLabel: safeFileName,
         replyTo,
       });
-      setPendingUserDrafts((drafts) => [...drafts, { content: `图片：${safeFileName}`, replyTo, kind: 'image' }]);
+      queueUserDraft({ content: `图片：${safeFileName}`, replyTo, kind: 'image' });
       setReplyDraft(null);
       setFailedDraft(null);
       event.target.value = '';
@@ -483,7 +543,7 @@ export function ChatScreen() {
       const replyTo = replyDraft || undefined;
       const message = await createGeneratedImageMessage({ prompt, role: 'user', replyTo });
       addMessage(activeChatId, activeChannel, message);
-      setPendingUserDrafts((drafts) => [...drafts, { content: `图片：${prompt}`, replyTo, kind: 'image' }]);
+      queueUserDraft({ content: `图片：${prompt}`, replyTo, kind: 'image' });
       setImageDraft('');
       setShowImageComposer(false);
       setReplyDraft(null);
@@ -503,6 +563,28 @@ export function ChatScreen() {
   const resetLifeDraft = () => {
     setLifeDraft({ amount: '', note: '', itemName: '' });
     setLifeComposer(null);
+  };
+
+  const acceptLifeCard = (message: ChatMessage) => {
+    if (!canAcceptLifeCard(message) || sending) return;
+    updateMessage(activeChatId, activeChannel, message.id, { status: 'accepted' });
+    const label = message.kind === 'red-packet' ? '我收了红包' : '我收了转账';
+    const content = `${label}${message.amount ? `：${message.amount}` : ''}${message.note ? `，${message.note}` : ''}`;
+    addMessage(activeChatId, activeChannel, {
+      id: createId('msg'),
+      role: 'user',
+      content,
+      timestamp: Date.now(),
+      kind: 'text',
+      replyTo: describeChatMessage(message).slice(0, 60),
+    });
+    setReplyDraft(null);
+    setFailedDraft(null);
+    queueUserDraft({
+      content,
+      replyTo: describeChatMessage(message, true, characters).slice(0, 80),
+      kind: message.kind,
+    });
   };
 
   const sendLifeCard = () => {
@@ -534,11 +616,11 @@ export function ChatScreen() {
         note,
       });
     }
-    setPendingUserDrafts((drafts) => [...drafts, {
+    queueUserDraft({
       content: describeChatMessage(message, true, characters),
       replyTo,
-      kind: 'text',
-    }]);
+      kind: lifeComposer,
+    });
     setReplyDraft(null);
     setFailedDraft(null);
     resetLifeDraft();
@@ -546,7 +628,7 @@ export function ChatScreen() {
   };
 
   return (
-    <section className={cn('relative flex h-full flex-col', isWechat && 'wechat-chat-screen')}>
+    <section ref={chatScreenRef} className={cn('relative flex h-full flex-col', isWechat && 'wechat-chat-screen')}>
       <div className={cn('px-4 pb-4 pt-6', isWechat && 'wechat-chat-header')}>
         <div className="grid grid-cols-[46px_1fr_46px] items-center">
           <button type="button" onClick={goBack} className="wechat-icon-button" aria-label="返回">
@@ -638,6 +720,7 @@ export function ChatScreen() {
                   : () => recallMessage(activeChatId, activeChannel, message.id)
                 : undefined}
               onVoicePlayed={() => markVoiceMessagePlayed(activeChatId, activeChannel, message.id)}
+              onAcceptLifeCard={canAcceptLifeCard(message) ? () => acceptLifeCard(message) : undefined}
             />
           );
         })}
@@ -653,7 +736,7 @@ export function ChatScreen() {
         <div ref={messagesEndRef} />
       </div>
 
-      <div className={cn('p-3', isWechat && 'wechat-input-bar')}>
+      <div ref={inputBarRef} className={cn('p-3', isWechat && 'wechat-input-bar')}>
         {replyDraft && (
           <div className="wechat-reply-draft">
             <span>引用：{replyDraft}</span>
@@ -720,7 +803,10 @@ export function ChatScreen() {
                 <textarea
                   value={imageDraft}
                   onChange={(event) => setImageDraft(event.target.value)}
-                  onFocus={() => window.setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' }), 80)}
+                  onFocus={() => {
+                    window.setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' }), 80);
+                    window.setTimeout(updateKeyboardLift, 80);
+                  }}
                   className="min-h-20 w-full resize-none"
                   placeholder="描述想生成的图片"
                 />
@@ -749,7 +835,10 @@ export function ChatScreen() {
           <textarea
             value={input}
             onChange={(event) => setInput(event.target.value)}
-            onFocus={() => window.setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' }), 80)}
+            onFocus={() => {
+              window.setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' }), 80);
+              window.setTimeout(updateKeyboardLift, 80);
+            }}
             onKeyDown={(event) => {
               if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault();
@@ -798,6 +887,7 @@ function Bubble({
   onReply,
   onRecall,
   onVoicePlayed,
+  onAcceptLifeCard,
 }: {
   key?: React.Key;
   role: 'user' | 'model';
@@ -824,6 +914,7 @@ function Bubble({
   onReply?: () => void;
   onRecall?: () => void;
   onVoicePlayed?: () => void;
+  onAcceptLifeCard?: () => void;
 }) {
   const isUser = role === 'user';
   const isWechat = channel === 'wechat';
@@ -891,6 +982,15 @@ function Bubble({
     onPointerCancel: clearLongPress,
     onPointerLeave: clearLongPress,
   };
+  const canReceiveLifeCard = canAcceptLifeCard({ role, kind: kind as ChatMessage['kind'], status });
+  const lifeCardEvents = canReceiveLifeCard && onAcceptLifeCard ? {
+    ...messageEvents,
+    onClick: (event: React.MouseEvent) => {
+      event.stopPropagation();
+      clearLongPress();
+      onAcceptLifeCard();
+    },
+  } : messageEvents;
 
   const meta = timestamp ? <span className="wechat-message-time">{formatMessageTime(timestamp)}</span> : null;
 
@@ -926,13 +1026,13 @@ function Bubble({
         {isWechat && !isUser && <WeChatAvatar src={character?.avatar} name={character?.name || 'char'} />}
         <div className={cn('flex max-w-[78%] flex-col', isUser ? 'items-end' : 'items-start')}>
           {replyLine}
-          <button type="button" className={cn('wechat-life-card', kind)} {...messageEvents}>
+          <button type="button" className={cn('wechat-life-card', kind, canReceiveLifeCard && 'receivable')} {...lifeCardEvents}>
             <span className="wechat-life-icon">
               {isShopping ? <ShoppingBag className="h-5 w-5" /> : isRedPacket ? <Gift className="h-5 w-5" /> : <RefreshCw className="h-5 w-5" />}
             </span>
             <span className="min-w-0 flex-1">
               <strong>{title}</strong>
-              <small>{isShopping ? (note || '生活购物') : status === 'accepted' ? '已收' : '待收'}</small>
+              <small>{isShopping ? (note || '生活购物') : status === 'accepted' ? '已收' : canReceiveLifeCard ? '点击收款' : '待收'}</small>
             </span>
             <b>{amountText}</b>
           </button>

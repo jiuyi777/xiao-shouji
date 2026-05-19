@@ -1,4 +1,4 @@
-﻿import { Camera, MessageCircle, MoreHorizontal, Plus, Phone, Search, Tag, UserPlus, Users } from 'lucide-react';
+﻿import { Camera, MessageCircle, MoreHorizontal, Phone, Plus, Search, Tag, Trash2, UserPlus, Users } from 'lucide-react';
 import React, { useRef, useState } from 'react';
 import { parseCharacterCard } from '../../../lib/charaParser';
 import { cn } from '../../../lib/utils';
@@ -7,7 +7,7 @@ import { useAppStore } from '../../../store';
 import { WeChatAvatar, WeChatGroupAvatar, WeChatTopBar } from '../shared/WeChatShared';
 
 export function WeChatContacts() {
-  const { characters, openChat, addCharacter, groupChats, addGroupChat, updateGroupChat, deleteGroupChat, contactTags, setContactTag } = useAppStore();
+  const { characters, openChat, addCharacter, deleteCharacter, groupChats, addGroupChat, updateGroupChat, deleteGroupChat, contactTags, setContactTag } = useAppStore();
   const [showAddMenu, setShowAddMenu] = useState(false);
   const [status, setStatus] = useState('');
   const [showGroupComposer, setShowGroupComposer] = useState(false);
@@ -76,6 +76,18 @@ export function WeChatContacts() {
     clearRenameTimer();
     renameTimer.current = window.setTimeout(() => renameGroup(group), 520);
   };
+  const removeCharacter = (character: Character) => {
+    const confirmed = window.confirm(`确定删除「${character.name}」吗？通讯录、聊天、群聊成员、电话、日记、相册、备忘录、音乐等关联记录都会一起删除。`);
+    if (!confirmed) return;
+    deleteCharacter(character.id);
+    setProfileId(null);
+    setSelectedMembers((members) => {
+      const next = { ...members };
+      delete next[character.id];
+      return next;
+    });
+    setStatus(`已删除：${character.name}`);
+  };
 
   if (profileCharacter) {
     const tag = contactTags[profileCharacter.id]?.[0] || '';
@@ -102,6 +114,10 @@ export function WeChatContacts() {
           <button type="button" className="wechat-profile-action">
             <Phone className="h-5 w-5" />
             音视频通话
+          </button>
+          <button type="button" onClick={() => removeCharacter(profileCharacter)} className="wechat-profile-action danger">
+            <Trash2 className="h-5 w-5" />
+            删除联系人
           </button>
         </div>
       </div>
@@ -224,6 +240,17 @@ export function WeChatContacts() {
                 />
               )}
             </button>
+            {!showTagEditor && (
+              <button
+                type="button"
+                onClick={() => removeCharacter(character)}
+                className="wechat-contact-delete-button"
+                aria-label={`删除 ${character.name}`}
+              >
+                <Trash2 className="h-4 w-4" />
+                <span>删除</span>
+              </button>
+            )}
           </div>
         ))}
       </div>

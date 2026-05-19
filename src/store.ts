@@ -20,6 +20,7 @@ import { defaultTtsConfig, type TtsConfig } from './tts';
 import { normalizeXiaohongshuNotes, normalizeXiaohongshuProfile } from './apps/xiaohongshu/xiaohongshuLogic';
 import type { XiaohongshuNote, XiaohongshuProfile } from './apps/xiaohongshu/types';
 import type { ThemeType } from './themes/themeOptions';
+import { cleanupCharacterReferences } from './storeCharacterCleanup';
 import {
   createDefaultAppPresets,
   mergeAppPresets,
@@ -604,10 +605,12 @@ interface AppState {
 
   addCharacter: (character: Character) => void;
   updateCharacter: (id: string, updates: Partial<Character>) => void;
+  deleteCharacter: (id: string) => void;
   setScreen: (screen: Screen) => void;
   goBack: () => void;
   openChat: (characterId: string, channel: 'wechat' | 'qq') => void;
   addMessage: (characterId: string, channel: 'wechat' | 'qq', message: ChatMessage) => void;
+  updateMessage: (characterId: string, channel: 'wechat' | 'qq', messageId: string, updates: Partial<ChatMessage>) => void;
   deleteMessage: (characterId: string, channel: 'wechat' | 'qq', messageId: string) => void;
   toggleMessageFavorite: (characterId: string, channel: 'wechat' | 'qq', messageId: string) => void;
   recallMessage: (characterId: string, channel: 'wechat' | 'qq', messageId: string) => void;
@@ -1377,6 +1380,16 @@ export const useAppStore = create<AppState>()(
             character.id === id ? { ...character, ...updates } : character,
           ),
         })),
+      deleteCharacter: (id) =>
+        set((state) => {
+          const character = state.characters.find((item) => item.id === id);
+          if (!character) return {};
+          return cleanupCharacterReferences({
+            characterId: id,
+            characterName: character.name,
+            state,
+          });
+        }),
       setScreen: (screen) => set((state) => ({ previousScreen: state.activeScreen, activeScreen: screen })),
       goBack: () =>
         set((state) => {
@@ -1442,6 +1455,24 @@ export const useAppStore = create<AppState>()(
               [key]: {
                 ...session,
                 messages: [...session.messages, message],
+                lastUpdated: Date.now(),
+              },
+            },
+          };
+        }),
+      updateMessage: (characterId, channel, messageId, updates) =>
+        set((state) => {
+          const key = sessionKey(characterId, channel);
+          const session = state.chatSessions[key];
+          if (!session) return {};
+          return {
+            chatSessions: {
+              ...state.chatSessions,
+              [key]: {
+                ...session,
+                messages: session.messages.map((message) =>
+                  message.id === messageId ? { ...message, ...updates } : message,
+                ),
                 lastUpdated: Date.now(),
               },
             },

@@ -224,17 +224,17 @@ body::-webkit-scrollbar,
 
 .shell-notification-button {
   position: absolute;
-  top: 12px;
+  top: calc(env(safe-area-inset-top, 0px) + 24px);
   left: 16px;
   z-index: 90;
   display: flex;
-  min-height: 28px;
+  min-height: 36px;
   align-items: center;
   gap: 4px;
   border: 2px solid rgba(17, 17, 17, 0.74);
   border-radius: 999px;
   background: rgba(255, 250, 240, 0.84);
-  padding: 4px 8px;
+  padding: 7px 12px;
   color: #111;
   font-size: 10px;
   font-weight: 1000;
@@ -965,7 +965,7 @@ body::-webkit-scrollbar,
   position: absolute;
   left: 12px;
   right: 18px;
-  top: 10px;
+  top: calc(env(safe-area-inset-top, 0px) + 24px);
   z-index: 30;
   display: flex;
   justify-content: flex-end;
@@ -1165,6 +1165,66 @@ body::-webkit-scrollbar,
   font-size: 15px;
   font-weight: 900;
   outline: none;
+}
+
+.character-profile-screen .sticky.top-0 {
+  padding-bottom: 8px !important;
+  padding-top: calc(env(safe-area-inset-top, 0px) + 10px) !important;
+}
+
+.character-profile-panel {
+  margin-top: 10px !important;
+  padding: 14px !important;
+}
+
+.character-profile-panel label {
+  margin-bottom: 12px;
+}
+
+.character-profile-panel label > span {
+  margin-bottom: 6px;
+  font-size: 16px;
+}
+
+.character-profile-panel .hand-input {
+  border-radius: 13px;
+  padding: 9px 12px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.character-profile-panel .fetch-button {
+  min-height: 50px;
+  padding: 11px;
+}
+
+.character-profile-actions {
+  display: grid;
+  gap: 8px;
+  margin-top: 4px;
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--phone-bg, #fffaf0) 80%, white);
+  padding: 8px;
+}
+
+.character-profile-delete-button {
+  display: inline-flex;
+  min-height: 46px;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 3px solid #111;
+  border-radius: 16px;
+  background: #ffe1e1;
+  color: #b91c1c;
+  font-size: 15px;
+  font-weight: 1000;
+  box-shadow: 2px 3px 0 rgba(0, 0, 0, 0.14);
+}
+
+.character-profile-delete-button:active {
+  transform: scale(0.985);
 }
 
 .theme-card {
@@ -2379,6 +2439,26 @@ body::-webkit-scrollbar,
   color: var(--wechat-active, currentColor);
 }
 
+.wechat-contact-delete-button {
+  display: inline-flex;
+  min-width: 76px;
+  min-height: 40px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: 1px solid color-mix(in srgb, #ff5d5d 52%, var(--wechat-line, transparent));
+  border-radius: 999px;
+  background: color-mix(in srgb, #ff5d5d 16%, var(--wechat-surface-2, #222));
+  color: #ff7b7b;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.wechat-contact-delete-button:active {
+  transform: scale(0.96);
+}
+
 .wechat-profile-page {
   display: grid;
   gap: 12px;
@@ -2425,6 +2505,11 @@ body::-webkit-scrollbar,
 .wechat-profile-action.primary {
   background: color-mix(in srgb, var(--wechat-active, #12c46e) 22%, var(--wechat-surface, #171717));
   color: var(--wechat-active, #12c46e);
+}
+
+.wechat-profile-action.danger {
+  background: color-mix(in srgb, #d94242 18%, var(--wechat-surface, #171717));
+  color: #ff7d7d;
 }
 
 .wechat-tag-filter {
@@ -2564,7 +2649,8 @@ body::-webkit-scrollbar,
   -webkit-overflow-scrolling: touch;
   min-width: 0;
   overscroll-behavior: contain;
-  padding-bottom: 22px;
+  padding-bottom: calc(22px + var(--wechat-keyboard-lift, 0px));
+  scroll-padding-bottom: calc(84px + var(--wechat-keyboard-lift, 0px));
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 70px),
     #111;
@@ -2821,7 +2907,7 @@ body::-webkit-scrollbar,
 
 .wechat-input-bar {
   position: sticky;
-  bottom: 0;
+  bottom: var(--wechat-keyboard-lift, 0px);
   z-index: 35;
   width: 100%;
   max-width: 100%;
@@ -3020,6 +3106,12 @@ body::-webkit-scrollbar,
   color: #fff;
   text-align: left;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+}
+
+.wechat-life-card.receivable {
+  cursor: pointer;
+  outline: 2px solid color-mix(in srgb, var(--wechat-active, #12c46e) 55%, transparent);
+  outline-offset: 2px;
 }
 
 .wechat-life-card.transfer {

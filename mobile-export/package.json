@@ -1,6 +1,6 @@
 {
   "name": "small-phone-mobile-export",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
@@ -20,6 +20,7 @@
     "react-native-webview": "13.15.0"
   },
   "devDependencies": {
+    "@react-native-community/cli": "^20.1.3",
     "eas-cli": "^16.24.1"
   }
 }
