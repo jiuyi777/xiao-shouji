@@ -1,0 +1,11 @@
+# src/backup
+
+## 2026-10-10维护导航
+
+- 职责：src/backup（src/backup）。
+- 当前阶段与下一步：[总计划](../../MAINTENANCE_OUTLINE.md)、[NEXT](../../NEXT.md)。本目录不另记独立进度。
+- 数据/发布红线：[保护清单](../../docs/PROTECTION_AND_RELEASE.md)。只提交与软件直接相关的源码、必要说明和实际运行资源。
+- 直接文件：`backupPayload.test.ts`、`backupPayload.ts`、`commitBackupImport.test.ts`、`commitBackupImport.ts`、`safeMerge.test.ts`、`safeMerge.ts`
+- 无子目录。
+- 修改入口、数据结构或共享逻辑后，同步本说明和总表对应任务；查调用方、保存、重开恢复，不能仅看页面。
+- 原有文件、备份、测试、许可证不能按名称猜测删除。新功能数据应复用明确权威来源，不建立第二份同义存档。

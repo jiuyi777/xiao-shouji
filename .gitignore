@@ -38,3 +38,19 @@ mobile-export/.mobile-tools/
 mobile-export/android-local-backup/.gradle/
 mobile-export/android-local-backup/build/
 mobile-export/android-local-backup/local.properties
+
+# Local design/process materials: preserve on disk, exclude from publication.
+/designs/
+/主题美化/
+/气泡美化/
+/docs/tasks/
+/docs/archive/
+/docs/superpowers/
+/docs/work-log.md
+/docs/verification-2026-09-10-backup-theater.md
+/docs/ui-ux-visual-audit-2026-08-16.md
+/p5-visual-*.png
+/release-delivery/
+# Runtime data is never a source artifact; retain its directory documentation.
+/data/*
+!/data/README.md
